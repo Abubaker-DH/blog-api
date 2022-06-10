@@ -10,6 +10,8 @@ const articleSchema = new mongoose.Schema(
       minlength: 5,
       maxlength: 255,
     },
+    body: { type: String, required: true, minlength: 100, maxlength: 1000 },
+    isPublish: { type: Boolean, default: false },
     category: {
       type: Schema.Types.ObjectId,
       required: true,
@@ -20,12 +22,12 @@ const articleSchema = new mongoose.Schema(
         imageUrl: { type: String, required: true },
       },
     ],
-    body: { type: String, required: true },
-    author: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },
   { timestamps: true }
 );
@@ -33,8 +35,8 @@ const articleSchema = new mongoose.Schema(
 function validateArticle(article) {
   const schema = Joi.object({
     title: Joi.string().min(5).max(50).required(),
-    body: Joi.string().min(100).max(500).required(),
-    author: Joi.objectId().required(),
+    body: Joi.string().min(100).max(1000).required(),
+    userId: Joi.objectId().required(),
     category: Joi.objectId().required(),
     images: Joi.array()
       .items(Joi.object({ imageUrl: Joi.string().required() }))
