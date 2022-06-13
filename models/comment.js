@@ -7,12 +7,13 @@ const commentSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Article",
     },
-    sender: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
     text: {
       type: String,
+      required: true,
     },
   },
   { timestamps: true }
@@ -20,9 +21,9 @@ const commentSchema = new mongoose.Schema(
 
 function validateComment(comment) {
   const schema = Joi.object({
-    text: Joi.string().max(255),
+    text: Joi.string().max(255).required(),
     articleId: Joi.string().required(),
-    sender: Joi.string().required(),
+    userId: Joi.string().required(),
   });
   return schema.validate(comment);
 }
