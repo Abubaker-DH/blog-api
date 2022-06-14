@@ -36,7 +36,6 @@ function validateArticle(article) {
   const schema = Joi.object({
     title: Joi.string().min(5).max(50).required(),
     body: Joi.string().min(100).max(1000).required(),
-    userId: Joi.objectId().required(),
     category: Joi.objectId().required(),
     images: Joi.array()
       .items(Joi.object({ imageUrl: Joi.string().required() }))

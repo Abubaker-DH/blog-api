@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const mongoose = require("mongoose");
 const express = require("express");
 const { Article, validateArticle } = require("../models/article");
@@ -18,7 +20,6 @@ router.get("/", async (req, res) => {
 
 // NOTE: Create new article
 router.post("/", async (req, res) => {
-  req.body.user = req.user._id;
   if (!req.files) return res.status(422).send("No image provided.");
 
   // INFO: get the imageUrl from req.files
@@ -103,6 +104,7 @@ router.delete("/:id", async (req, res) => {
     });
 
     await session.commitTransaction();
+    clearImage(article.images);
     return res.send({ article, comments });
   } catch (error) {
     console.log("error Deleting article and comments", error);
@@ -126,5 +128,13 @@ router.get("/:id", async (req, res) => {
 
   res.send({ article, comments });
 });
+
+// NOTE: Delete image from image Folder
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => {
+    return err;
+  });
+};
 
 module.exports = router;
