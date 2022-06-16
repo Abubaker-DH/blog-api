@@ -1,25 +1,28 @@
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-const express = require("express");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { Article, validateArticle } = require("../models/article");
 const { Category } = require("../models/category");
 const { Comment } = require("../models/comment");
+const express = require("express");
 const router = express.Router();
 
-// NOTE: Get all articles
+// NOTE: Search articles
 router.get("/search", async (req, res) => {
   let q = req.query.title;
   // INFO: user will Get all article
   const articles = await Article.find({
     title: { $regex: q, $options: "i" },
+    isPublish: "true",
   }).populate("userId", "name _id profileImage");
 
   res.send(articles);
 });
 
 // NOTE: Get all articles
-router.get("/", async (req, res) => {
+router.get("/", [auth, admin], async (req, res) => {
   // INFO: user will Get all article
   const articles = await Article.find().populate(
     "userId",
@@ -30,7 +33,9 @@ router.get("/", async (req, res) => {
 });
 
 // NOTE: Create new article
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
+  if (req.user.role === "user") return res.status(403).send("Access denied.");
+
   if (!req.files) return res.status(422).send("No image provided.");
 
   // INFO: get the imageUrl from req.files
@@ -63,12 +68,18 @@ router.post("/", async (req, res) => {
 });
 
 // NOTE: Update article
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
   let article = await Article.findById(req.params.id);
   if (!article)
     return res.status(404).send(" The article with given ID was not found.");
 
-  // INFO: The owner or admin can Update the article
+  // INFO: The Owner Can Update the article
+  if (req.user._id.toString() !== article.userId.toString())
+    return res.status(403).send("Access denied.");
+
+  if (req.body.isPublish && req.user.role !== "admin") {
+    return res.status(403).send("method not allowed.");
+  }
 
   // INFO: find category by id
   const category = await Category.findById(req.body.category);
@@ -90,6 +101,7 @@ router.patch("/:id", async (req, res) => {
       category: req.body.category._id,
       body: req.body.body,
       images: req.body.images,
+      isPublish: req.body.isPublish,
     },
     { new: true }
   );
@@ -98,12 +110,10 @@ router.patch("/:id", async (req, res) => {
 });
 
 // NOTE: Delete article
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   let article = await Article.findById(req.params.id);
   if (!article)
     return res.status(404).send(" The article with given ID was not found.");
-
-  // INFO: the owner or admin can delete the article
 
   const session = await mongoose.startSession();
   session.startTransaction();

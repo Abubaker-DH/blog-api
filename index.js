@@ -1,8 +1,53 @@
 require("dotenv").config();
 const express = require("express");
+const winston = require("winston");
 const mongoose = require("mongoose");
+const users = require("./routes/users");
+const articles = require("./routes/articles");
+const comments = require("./routes/comments");
+const categories = require("./routes/categories");
 
 const app = express();
+
+// INFO: Setup image folder and image URL
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      new Date().toISOString().replace(/[\/\\:]/g, "-") +
+        "-" +
+        file.originalname
+    );
+  },
+});
+
+// INFO: Type of file that acceptaple to upload
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/JPG" ||
+    file.mimetype === "image/JPEG"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).array("imageUrl", 5)
+);
+
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+app.use("/api/v1/users", users);
+app.use("/api/v1/articles", articles);
+app.use("/api/v1/comments", comments);
+app.use("/api/v1/categories", categories);
 
 const MONGO_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
@@ -13,5 +58,5 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    app.listen(PORT, () => console.log(`server running on port ${PORT} ...`));
+    app.listen(PORT, () => winston.info(`server running on port ${PORT} ...`));
   });

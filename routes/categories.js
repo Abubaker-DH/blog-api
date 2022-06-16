@@ -1,5 +1,7 @@
 const { Category, validateCategory } = require("../models/category");
 const express = require("express");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const router = express.Router();
 
 // INFO: Get all categories
@@ -9,7 +11,7 @@ router.get("/", async (req, res) => {
 });
 
 // INFO: Create new category
-router.post("/", async (req, res) => {
+router.post("/", [auth, admin], async (req, res) => {
   // NOTE: validate data send by user
   const { error } = validateCategory(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -21,7 +23,7 @@ router.post("/", async (req, res) => {
 });
 
 // INFO: Update category
-router.put("/:id", async (req, res) => {
+router.put("/:id", [auth, admin], async (req, res) => {
   // NOTE: validate data send by user
   const { error } = validateCategory(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -43,7 +45,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // INFO: Delete category
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const category = await Category.findByIdAndRemove(req.params.id);
 
   if (!category)
@@ -55,7 +57,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // INFO: Get one category
-router.get("/:id", async (req, res) => {
+router.get("/:id", [auth, admin], async (req, res) => {
   const category = await Category.findById(req.params.id).select("-__v");
 
   if (!category)
