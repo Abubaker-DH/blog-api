@@ -1,10 +1,12 @@
 const express = require("express");
 const { Article } = require("../models/article");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { Comment, validateComment } = require("../models/comment");
 const router = express.Router();
 
 // INFO: Get all Comment that belong to article
-router.get("/:articleId", async (req, res) => {
+router.get("/:articleId", [auth, admin], async (req, res) => {
   const article = await Article.findById({
     _id: req.params.articleId,
   });
@@ -19,8 +21,8 @@ router.get("/:articleId", async (req, res) => {
   res.status(200).json(comments);
 });
 
-// INFO: Create new message Route
-router.post("/", async (req, res) => {
+// INFO: Create new comment
+router.post("/", auth, async (req, res) => {
   const { error } = validateComment(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -42,15 +44,13 @@ router.post("/", async (req, res) => {
 });
 
 // INFO: Delete comment
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const comment = await Comment.findById({
     _id: req.params.id,
   });
 
   if (!comment)
     return res.status(404).send("The Comment with given ID was not found.");
-
-  // NOTE: Only the Admin can delete comment
 
   await Comment.findByIdAndRemove({
     _id: req.params.id,

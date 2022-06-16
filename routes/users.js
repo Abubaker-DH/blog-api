@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 const lodash = require("lodash");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const {
   User,
   validateUser,
@@ -12,7 +14,7 @@ const express = require("express");
 const router = express.Router();
 
 // NOTE: Get all users
-router.get("/", async (req, res) => {
+router.get("/", [auth, admin], async (req, res) => {
   const user = await User.find().select("-password");
 
   res.send(user);
@@ -61,8 +63,8 @@ router.post("/login", async (req, res, next) => {
 });
 
 // NOTE: Get one user by ID
-router.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id).select("-role -password");
+router.get("/:id", [auth, admin], async (req, res) => {
+  const user = await User.findById(req.params.id);
   if (!user)
     return res.status(404).send("The user with given ID was not found.");
 
@@ -70,7 +72,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // NOTE: Update user route
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
   let user = await User.findById({ _id: req.params.id });
   if (!user)
     return res.status(404).send("The user with given ID was not found");
@@ -114,7 +116,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // NOTE: Delete User By ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const user = await User.findByIdAndRemove({
     _id: req.params.id,
     isAdmin: false,
