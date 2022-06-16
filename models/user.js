@@ -58,13 +58,6 @@ function validateLogin(user) {
   return schema.validate(user);
 }
 
-function validateRole(user) {
-  const schema = Joi.object({
-    role: Joi.string().required(),
-  });
-  return schema.validate(user);
-}
-
 userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
     { _id: this._id, email: this.email, role: this.role },

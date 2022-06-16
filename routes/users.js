@@ -38,7 +38,7 @@ router.post("/register", async (req, res, next) => {
 
   res
     .setHeader("Access-Control-Allow-Headers", "Content-type, Authorization")
-    .header("authorization", token)
+    .header("authorization", "bearer " + token)
     .status(201)
     .send(lodash.pick(user, ["_id", "name", "email", "imageUrl"]));
 });
