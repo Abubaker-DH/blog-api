@@ -8,6 +8,17 @@ const { Comment } = require("../models/comment");
 const router = express.Router();
 
 // NOTE: Get all articles
+router.get("/search", async (req, res) => {
+  let q = req.query.title;
+  // INFO: user will Get all article
+  const articles = await Article.find({
+    title: { $regex: q, $options: "i" },
+  }).populate("userId", "name _id profileImage");
+
+  res.send(articles);
+});
+
+// NOTE: Get all articles
 router.get("/", async (req, res) => {
   // INFO: user will Get all article
   const articles = await Article.find().populate(

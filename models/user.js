@@ -36,6 +36,7 @@ function validateUser(user) {
   const schema = Joi.object({
     name: Joi.string().required().min(4).max(10),
     profileImage: Joi.string(),
+    role: Joi.string(),
   });
   return schema.validate(user);
 }
