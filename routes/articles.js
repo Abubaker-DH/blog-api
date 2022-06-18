@@ -7,6 +7,7 @@ const { Article, validateArticle } = require("../models/article");
 const { Category } = require("../models/category");
 const { Comment } = require("../models/comment");
 const express = require("express");
+const validateObjectId = require("../middleware/validateObjectId");
 const router = express.Router();
 
 // NOTE: Search articles
@@ -68,7 +69,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 // NOTE: Update article
-router.patch("/:id", auth, async (req, res) => {
+router.patch("/:id", [auth, validateObjectId], async (req, res) => {
   let article = await Article.findById(req.params.id);
   if (!article)
     return res.status(404).send(" The article with given ID was not found.");
@@ -110,7 +111,7 @@ router.patch("/:id", auth, async (req, res) => {
 });
 
 // NOTE: Delete article
-router.delete("/:id", [auth, admin], async (req, res) => {
+router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   let article = await Article.findById(req.params.id);
   if (!article)
     return res.status(404).send(" The article with given ID was not found.");
@@ -136,7 +137,7 @@ router.delete("/:id", [auth, admin], async (req, res) => {
 });
 
 // NOTE: Get one article route
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const article = await Article.findById(req.params.id).populate(
     "userId",
     "name _id profileImage"

@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const winston = require("winston");
 const mongoose = require("mongoose");
+const errors = require("./middleware/error");
 const users = require("./routes/users");
 const articles = require("./routes/articles");
 const comments = require("./routes/comments");
@@ -48,6 +49,7 @@ app.use("/api/v1/users", users);
 app.use("/api/v1/articles", articles);
 app.use("/api/v1/comments", comments);
 app.use("/api/v1/categories", categories);
+app.use(errors);
 
 const MONGO_URL = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;

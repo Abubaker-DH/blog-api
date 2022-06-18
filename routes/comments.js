@@ -1,12 +1,13 @@
 const express = require("express");
 const { Article } = require("../models/article");
 const auth = require("../middleware/auth");
-const admin = require("../middleware/admin");
+const auth = require("../middleware/auth");
+const validateObjectId = require("../middleware/validateObjectId");
 const { Comment, validateComment } = require("../models/comment");
 const router = express.Router();
 
 // INFO: Get all Comment that belong to article
-router.get("/:articleId", [auth, admin], async (req, res) => {
+router.get("/:articleId", [auth, admin, validateObjectId], async (req, res) => {
   const article = await Article.findById({
     _id: req.params.articleId,
   });
@@ -44,7 +45,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 // INFO: Delete comment
-router.delete("/:id", [auth, admin], async (req, res) => {
+router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const comment = await Comment.findById({
     _id: req.params.id,
   });
