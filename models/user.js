@@ -75,4 +75,3 @@ module.exports.User = mongoose.model("User", userSchema);
 module.exports.validateRegister = validateRegister;
 module.exports.validateUser = validateUser;
 module.exports.validateLogin = validateLogin;
-module.exports.validateRole = validateRole;

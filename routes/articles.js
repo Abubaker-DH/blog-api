@@ -23,6 +23,17 @@ router.get("/search", async (req, res) => {
 });
 
 // NOTE: Get all articles
+router.get("/home", async (req, res) => {
+  // INFO: user will Get all article
+  const articles = await Article.find({ isPublish: "true" }).populate(
+    "userId",
+    "name _id profileImage"
+  );
+
+  res.send(articles);
+});
+
+// NOTE: Admin to get all articles
 router.get("/", [auth, admin], async (req, res) => {
   // INFO: user will Get all article
   const articles = await Article.find().populate(

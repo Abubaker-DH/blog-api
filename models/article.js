@@ -13,7 +13,7 @@ const articleSchema = new mongoose.Schema(
     body: { type: String, required: true, minlength: 100, maxlength: 1000 },
     isPublish: { type: Boolean, default: false },
     category: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Category",
     },
@@ -23,11 +23,11 @@ const articleSchema = new mongoose.Schema(
       },
     ],
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   { timestamps: true }
 );

@@ -1,7 +1,10 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
+const Joi = require("joi");
 const winston = require("winston");
 const mongoose = require("mongoose");
+const multer = require("multer");
 const errors = require("./middleware/error");
 const users = require("./routes/users");
 const articles = require("./routes/articles");
@@ -9,6 +12,9 @@ const comments = require("./routes/comments");
 const categories = require("./routes/categories");
 
 const app = express();
+
+Joi.objectId = require("joi-objectid")(Joi);
+app.use(express.json());
 
 // INFO: Setup image folder and image URL
 const fileStorage = multer.diskStorage({
@@ -45,13 +51,16 @@ app.use(
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
+// INFO: logging error middleware
+require("./middleware/log")();
+
 app.use("/api/v1/users", users);
 app.use("/api/v1/articles", articles);
 app.use("/api/v1/comments", comments);
 app.use("/api/v1/categories", categories);
 app.use(errors);
 
-const MONGO_URL = process.env.MONGO_URI;
+const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(MONGO_URL, {

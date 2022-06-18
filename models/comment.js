@@ -4,11 +4,11 @@ const Joi = require("joi");
 const commentSchema = new mongoose.Schema(
   {
     articleId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Article",
     },
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     text: {

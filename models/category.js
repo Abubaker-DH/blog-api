@@ -10,7 +10,7 @@ const categorySchema = new mongoose.Schema(
       maxlength: 10,
     },
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
