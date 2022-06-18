@@ -13,9 +13,16 @@ const router = express.Router();
 // NOTE: Search articles
 router.get("/search", async (req, res) => {
   let q = req.query.title;
+  let articles;
   // INFO: user will Get all article
-  const articles = await Article.find({
-    title: { $regex: q, $options: "i" },
+  if (q) {
+    articles = await Article.find({
+      title: { $regex: q, $options: "i" },
+      isPublish: "true",
+    }).populate("userId", "name _id profileImage");
+  }
+
+  articles = await Article.find({
     isPublish: "true",
   }).populate("userId", "name _id profileImage");
 
