@@ -7,7 +7,7 @@ const router = express.Router();
 
 // INFO: Get all categories
 router.get("/", async (req, res) => {
-  const categories = await Category.find().select("-__v").sort("title");
+  const categories = await Category.find().select("-__v -userId").sort("title");
   res.send(categories);
 });
 
@@ -31,7 +31,7 @@ router.put("/:id", [auth, admin, validateObjectId], async (req, res) => {
 
   const category = await Category.findByIdAndUpdate(
     req.params.id,
-    { name: req.body.name },
+    { title: req.body.title },
     {
       new: true,
     }

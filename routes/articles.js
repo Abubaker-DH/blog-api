@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
 const auth = require("../middleware/auth");
+const { upload } = require("../middleware/upload");
 const admin = require("../middleware/admin");
 const { Article, validateArticle } = require("../models/article");
 const { Category } = require("../models/category");
@@ -54,7 +55,7 @@ router.get("/", [auth, admin], async (req, res) => {
 });
 
 // NOTE: Create new article
-router.post("/", auth, async (req, res) => {
+router.post("/", [auth, upload.array("imageUrl", 4)], async (req, res) => {
   if (req.user.role === "user") return res.status(403).send("Access denied.");
 
   if (!req.files) return res.status(422).send("No image provided.");
@@ -89,46 +90,50 @@ router.post("/", auth, async (req, res) => {
 });
 
 // NOTE: Update article
-router.patch("/:id", [auth, validateObjectId], async (req, res) => {
-  let article = await Article.findById(req.params.id);
-  if (!article)
-    return res.status(404).send(" The article with given ID was not found.");
+router.patch(
+  "/:id",
+  [auth, validateObjectId, upload.array("imageUrl", 4)],
+  async (req, res) => {
+    let article = await Article.findById(req.params.id);
+    if (!article)
+      return res.status(404).send(" The article with given ID was not found.");
 
-  // INFO: The Owner Can Update the article
-  if (req.user._id.toString() !== article.userId.toString())
-    return res.status(403).send("Access denied.");
+    // INFO: The Owner Can Update the article
+    if (req.user._id.toString() !== article.userId.toString())
+      return res.status(403).send("Access denied.");
 
-  if (req.body.isPublish && req.user.role !== "admin") {
-    return res.status(403).send("method not allowed.");
-  }
-
-  // INFO: find category by id
-  const category = await Category.findById(req.body.category);
-  if (!category) return res.status(400).send("Invalid category.");
-
-  let images = article.images;
-  if (req.files) {
-    for (i = 0; i < req.files.length; i++) {
-      images[i] = { imageUrl: req.files[i].path };
+    if (req.body.isPublish && req.user.role !== "admin") {
+      return res.status(403).send("method not allowed.");
     }
+
+    // INFO: find category by id
+    const category = await Category.findById(req.body.category);
+    if (!category) return res.status(400).send("Invalid category.");
+
+    let images = article.images;
+    if (req.files) {
+      for (i = 0; i < req.files.length; i++) {
+        images[i] = { imageUrl: req.files[i].path };
+      }
+    }
+    req.body.images = images;
+
+    article = await article.findByIdAndUpdate(
+      req.params.id,
+      {
+        title: req.body.title,
+        user: req.user._id,
+        category: req.body.category._id,
+        body: req.body.body,
+        images: req.body.images,
+        isPublish: req.body.isPublish,
+      },
+      { new: true }
+    );
+
+    res.send(article);
   }
-  req.body.images = images;
-
-  article = await article.findByIdAndUpdate(
-    req.params.id,
-    {
-      title: req.body.title,
-      user: req.user._id,
-      category: req.body.category._id,
-      body: req.body.body,
-      images: req.body.images,
-      isPublish: req.body.isPublish,
-    },
-    { new: true }
-  );
-
-  res.send(article);
-});
+);
 
 // NOTE: Delete article
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
