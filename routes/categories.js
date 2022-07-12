@@ -1,8 +1,8 @@
-const { Category, validateCategory } = require("../models/category");
 const express = require("express");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const validateObjectId = require("../middleware/validateObjectId");
+const { Category, validateCategory } = require("../models/category");
 const router = express.Router();
 
 // INFO: Get all categories

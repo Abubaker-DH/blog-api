@@ -3,6 +3,7 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 const lodash = require("lodash");
 const auth = require("../middleware/auth");
+const { upload } = require("../middleware/upload");
 const admin = require("../middleware/admin");
 const {
   User,
@@ -73,48 +74,50 @@ router.get("/:id", [auth, admin, validateObjectId], async (req, res) => {
 });
 
 // NOTE: Update user route
-router.patch("/:id", [auth, validateObjectId], async (req, res) => {
-  let user = await User.findById({ _id: req.params.id });
-  if (!user)
-    return res.status(404).send("The user with given ID was not found");
+router.patch(
+  "/:id",
+  [auth, validateObjectId, upload.single("profileImage")],
+  async (req, res) => {
+    let user = await User.findById({ _id: req.params.id });
+    if (!user)
+      return res.status(404).send("The user with given ID was not found");
 
-  // INFO: The Owner or Admin can Update
-  if (
-    req.user._id.toString() !== req.params.id.toString() ||
-    req.user.role !== "admin"
-  ) {
-    return res.status(403).send("method not allowed.");
+    // INFO: The user can not change his role
+    if (req.body.role && req.user.role !== "admin") {
+      return res.status(403).send("method not allowed.");
+    }
+
+    // INFO: Get the profile image from req.file
+    if (req.file) {
+      req.body.profileImage = req.file.path;
+    }
+
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    //  INFO: Delete the old image
+    if (user.profileImage) clearImage(user.profileImage);
+
+    // INFO: The Owner or Admin can Update
+    if (
+      req.user._id.toString() === req.params.id.toString() ||
+      req.user.role === "admin"
+    ) {
+      user = await User.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          name: req.body.name,
+          role: req.body.role,
+          profileImage: req.body.profileImage,
+        },
+        { new: true }
+      );
+      res.send(user);
+    } else {
+      return res.status(403).send("method not allowed.");
+    }
   }
-
-  // INFO: The user can not change his role
-  if (req.body.role && req.user.role !== "admin") {
-    return res.status(403).send("method not allowed.");
-  }
-
-  // INFO: Get the profile image from req.file
-  if (req.file) {
-    req.body.profileImage = req.file.path;
-  }
-
-  const { error } = validateUser(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  //  INFO: Delete the old image
-  if (req.body.profileImage || req.body.profileImage === "")
-    clearImage(user.profileImage);
-
-  user = await User.findByIdAndUpdate(
-    { _id: req.params.id },
-    {
-      name: req.body.name,
-      role: req.body.role,
-      profileImage: req.body.profileImage,
-    },
-    { new: true }
-  );
-
-  res.send(user);
-});
+);
 
 // NOTE: Delete User By ID
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {

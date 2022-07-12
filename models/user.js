@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
 
 function validateUser(user) {
   const schema = Joi.object({
-    name: Joi.string().required().min(4).max(10),
+    name: Joi.string().min(4).max(10),
     profileImage: Joi.string(),
     role: Joi.string(),
   });

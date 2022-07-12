@@ -20,6 +20,8 @@ router.get("/search", async (req, res) => {
       title: { $regex: q, $options: "i" },
       isPublish: "true",
     }).populate("userId", "name _id profileImage");
+
+    res.send(articles);
   }
 
   articles = await Article.find({
