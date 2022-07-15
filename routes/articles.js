@@ -55,34 +55,30 @@ router.get("/", [auth, admin], async (req, res) => {
 });
 
 // NOTE: Create new article
-router.post("/", [auth, upload.array("imageUrl", 4)], async (req, res) => {
+router.post("/", [auth, upload.single("imageUrl")], async (req, res) => {
   if (req.user.role === "user") return res.status(403).send("Access denied.");
 
   if (!req.files) return res.status(422).send("No image provided.");
 
-  // INFO: get the imageUrl from req.files
-  let images = [];
-  for (i = 0; i < req.files.length; i++) {
-    images[i] = { imageUrl: req.files[i].path };
+  // INFO: add images beCouse we validate the body
+  if (req.file) {
+    req.body.imageUrl = req.file.path;
   }
-
-  // INFO: add images becouse we validate the body
-  req.body.images = images;
 
   // INFO: validate data send by user
   const { error } = validateArticle(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   // INFO: find category by id
-  const category = await Category.findById(req.body.category);
+  const category = await Category.findById(req.body.categoryId);
   if (!category) return res.status(400).send("Invalid category.");
 
   const article = new Article({
     title: req.body.title,
-    user: req.user._id,
-    category: req.body.category._id,
+    userId: req.user._id,
+    categoryId: req.body.categoryId,
     body: req.body.body,
-    images: req.body.images,
+    imageUrl: req.body.imageUrl,
   });
   await article.save();
 
@@ -92,7 +88,7 @@ router.post("/", [auth, upload.array("imageUrl", 4)], async (req, res) => {
 // NOTE: Update article
 router.patch(
   "/:id",
-  [auth, validateObjectId, upload.array("imageUrl", 4)],
+  [auth, validateObjectId, upload.single("imageUrl")],
   async (req, res) => {
     let article = await Article.findById(req.params.id);
     if (!article)
@@ -102,30 +98,30 @@ router.patch(
     if (req.user._id.toString() !== article.userId.toString())
       return res.status(403).send("Access denied.");
 
-    if (req.body.isPublish && req.user.role !== "admin") {
-      return res.status(403).send("method not allowed.");
+    // INFO: The Admin and Editor can publish
+    if (req.body.isPublish) {
+      if (req.user.role !== "admin" || req.user.role !== "editor") {
+        return res.status(403).send("method not allowed.");
+      }
     }
 
     // INFO: find category by id
-    const category = await Category.findById(req.body.category);
+    const category = await Category.findById(req.body.categoryId);
     if (!category) return res.status(400).send("Invalid category.");
 
-    let images = article.images;
-    if (req.files) {
-      for (i = 0; i < req.files.length; i++) {
-        images[i] = { imageUrl: req.files[i].path };
-      }
+    if (req.file) {
+      clearImage(article.imageUrl);
+      req.body.imageUrl = req.file.path;
     }
-    req.body.images = images;
 
-    article = await article.findByIdAndUpdate(
+    article = await Article.findByIdAndUpdate(
       req.params.id,
       {
         title: req.body.title,
-        user: req.user._id,
-        category: req.body.category._id,
+        userId: req.user._id,
+        categoryId: req.body.categoryId,
         body: req.body.body,
-        images: req.body.images,
+        imageUrl: req.body.imageUrl,
         isPublish: req.body.isPublish,
       },
       { new: true }
@@ -151,7 +147,7 @@ router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
     });
 
     await session.commitTransaction();
-    clearImage(article.images);
+    clearImage(article.imageUrl);
     return res.send({ article, comments });
   } catch (error) {
     console.log("error Deleting article and comments", error);

@@ -10,18 +10,14 @@ const articleSchema = new mongoose.Schema(
       minlength: 5,
       maxlength: 255,
     },
-    body: { type: String, required: true, minlength: 100, maxlength: 1000 },
+    body: { type: String, required: true, minlength: 100, maxlength: 5000 },
     isPublish: { type: Boolean, default: false },
-    category: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Category",
     },
-    images: [
-      {
-        imageUrl: { type: String, required: true },
-      },
-    ],
+    imageUrl: { type: String, required: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -34,12 +30,10 @@ const articleSchema = new mongoose.Schema(
 
 function validateArticle(article) {
   const schema = Joi.object({
-    title: Joi.string().min(5).max(50).required(),
-    body: Joi.string().min(100).max(1000).required(),
-    category: Joi.objectId().required(),
-    images: Joi.array()
-      .items(Joi.object({ imageUrl: Joi.string().required() }))
-      .min(1),
+    title: Joi.string().min(5).max(255).required(),
+    body: Joi.string().min(100).max(5000).required(),
+    categoryId: Joi.objectId().required(),
+    imageUrl: Joi.string().required(),
   });
 
   return schema.validate(article);
