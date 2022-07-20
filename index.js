@@ -4,8 +4,8 @@ const express = require("express");
 const app = express();
 
 // INFO: logging error middleware
-require("./middleware/log")();
 require("./startup/db")();
+require("./middleware/log")();
 require("./startup/validation")();
 require("./startup/production")(app);
 require("./startup/fileUpload")(app);

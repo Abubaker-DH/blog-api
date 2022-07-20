@@ -32,17 +32,6 @@ router.get("/search", async (req, res) => {
   res.send(articles);
 });
 
-// NOTE: Get all articles
-router.get("/home", async (req, res) => {
-  // INFO: user will Get all article
-  const articles = await Article.find({ isPublish: "true" }).populate(
-    "userId",
-    "name _id profileImage"
-  );
-
-  res.send(articles);
-});
-
 // NOTE: Admin to get all articles
 router.get("/", [auth, admin], async (req, res) => {
   // INFO: user will Get all article
@@ -159,17 +148,18 @@ router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
 
 // NOTE: Get one article route
 router.get("/:id", validateObjectId, async (req, res) => {
-  const article = await Article.findById(req.params.id).populate(
-    "userId",
-    "name _id profileImage"
-  );
-
-  const comments = await Comment.find({ articleId: req.params.id });
+  // NOTE: Populate across multiple levels
+  const article = await Article.findById(req.params.id)
+    .populate("userId", "name _id profileImage")
+    .populate({
+      path: "comments.commentId",
+      populate: { path: "userId", select: "_id name profileImage" },
+    });
 
   if (!article)
     return res.status(404).send(" The Article with given ID was not found.");
 
-  res.send({ article, comments });
+  res.send(article);
 });
 
 // NOTE: Delete image from image Folder

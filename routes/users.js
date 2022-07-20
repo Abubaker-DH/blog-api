@@ -89,6 +89,7 @@ router.patch(
 
     // INFO: Get the profile image from req.file
     if (req.file) {
+      clearImage(user.profileImage);
       req.body.profileImage = req.file.path;
     }
 
