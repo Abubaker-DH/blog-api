@@ -10,9 +10,9 @@ const error = require("../middleware/error");
 module.exports = function (app) {
   app.use(express.json());
   // INFO: Swagger
-  // const swaggerDocument = YAML.load("./swagger.yaml");
+  const swaggerDocument = YAML.load("./swagger.yaml");
 
-  // app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
   app.use("/api/v1/users", users);
   app.use("/api/v1/articles", articles);
   app.use("/api/v1/comments", comments);
