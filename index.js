@@ -1,4 +1,5 @@
-const dotenv = require("dotenv");
+require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const Joi = require("joi");
@@ -7,16 +8,15 @@ const helmet = require("helmet");
 const compression = require("compression");
 const xss = require("xss-clean");
 const rateLimit = require("express-rate-limit");
-const users = require("../routes/users");
-const categories = require("../routes/categories");
-const articles = require("../routes/articles");
-const comments = require("../routes/comments");
+const users = require("./routes/users");
+const categories = require("./routes/categories");
+const articles = require("./routes/articles");
+const comments = require("./routes/comments");
+const error = require("./middleware/error");
 
 const app = express();
-Joi.objectId = require("joi-objectid")(Joi);
-
 app.use(express.json());
-dotenv.config();
+Joi.objectId = require("joi-objectid")(Joi);
 
 // INFO: if we behind a proxy
 app.set("trust proxy", 1);
@@ -43,7 +43,7 @@ app.use("/api/v1/comments", comments);
 app.use("/api/v1/users", users);
 app.use(error);
 
-const MONGO_URL = process.env.MONGO_URI;
+const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
 
 mongoose
