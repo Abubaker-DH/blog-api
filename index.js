@@ -10,6 +10,9 @@ const app = express();
 app.use(express.json());
 dotenv.config();
 
+// INFO: path for ststic file
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 app.use("/api/v1/articles", articles);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/comments", comments);
