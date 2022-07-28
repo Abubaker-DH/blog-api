@@ -43,7 +43,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 const swaggerDocument = YAML.load("./swagger.yaml");
 
 app.get("/", (req, res) => {
-  res.send('<h1">Blog Api</h1><a href="/api-docs">Documentation</a>');
+  res.send('<h1">Blog Api </h1><a href="/api-docs">Documentation</a>');
 });
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use("/api/v1/articles", articles);

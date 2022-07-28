@@ -380,21 +380,13 @@ paths:
       deprecated: false
       security:
         - bearer: []
-
-  /comments/{id}:
+  /comments:
     post:
       tags:
         - Comments
       summary: New Comment
       operationId: NewComment
-      parameters:
-        - name: id
-          in: path
-          description: ""
-          required: true
-          style: simple
-          schema:
-            type: string
+      parameters: []
       requestBody:
         description: ""
         content:
@@ -416,14 +408,7 @@ paths:
         - Comments
       summary: Get All Comment For Specific Article
       operationId: GetAllCommentForSpecificArticle
-      parameters:
-        - name: id
-          in: path
-          description: ""
-          required: true
-          style: simple
-          schema:
-            type: string
+      parameters: []
       responses:
         "200":
           description: ""
@@ -431,6 +416,7 @@ paths:
       deprecated: false
       security:
         - bearer: []
+  /comments/{id}:
     delete:
       tags:
         - Comments

@@ -7,18 +7,9 @@ const admin = require("../middleware/admin");
 const validateObjectId = require("../middleware/validateObjectId");
 const router = express.Router();
 
-// INFO: Get all Comment that belong to one article
+// INFO: Get all Comments
 router.get("/", [auth, admin], async (req, res) => {
-  const article = await Article.findById({
-    _id: req.body.articleId,
-  });
-
-  if (!article)
-    return res.status(404).send("The Article with given ID was not found.");
-
-  const comments = await Comment.find({
-    articleId: req.body.articleId,
-  }).populate("userId", "-password");
+  const comments = await Comment.find().populate("userId", "-password");
 
   res.status(200).json(comments);
 });
