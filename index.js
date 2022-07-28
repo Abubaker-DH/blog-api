@@ -13,10 +13,10 @@ const categories = require("./routes/categories");
 const articles = require("./routes/articles");
 const comments = require("./routes/comments");
 const error = require("./middleware/error");
+Joi.objectId = require("joi-objectid")(Joi);
 
 const app = express();
 app.use(express.json());
-Joi.objectId = require("joi-objectid")(Joi);
 
 // INFO: if we behind a proxy
 app.set("trust proxy", 1);
