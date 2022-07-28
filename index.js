@@ -2,6 +2,8 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs");
 const Joi = require("joi");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -37,6 +39,13 @@ app.use(compression());
 // INFO: path for ststic file
 app.use("/images", express.static(path.join(__dirname, "images")));
 
+// INFO: Swagger
+const swaggerDocument = YAML.load("./swagger.yaml");
+
+app.get("/", (req, res) => {
+  res.send('<div><h2>Blog Api</h2><a href="/api-docs">Documentation</a></div>');
+});
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use("/api/v1/articles", articles);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/comments", comments);

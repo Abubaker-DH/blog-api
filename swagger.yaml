@@ -1,0 +1,534 @@
+openapi: 3.0.0
+info:
+  title: Blog Api
+  contact: {}
+  version: "1.0"
+servers:
+  - url: https://blog-api-4.herokuapp.com/api/v1/
+    variables: {}
+paths:
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Login
+      operationId: Login
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security: []
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Register
+      operationId: Register
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Register"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security: []
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get All User
+      operationId: GetAllUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: One User by Id
+      operationId: OneUserbyId
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    patch:
+      tags:
+        - Users
+      summary: Update user
+      operationId: Updateuser
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+            schema:
+              required:
+                - profileImage
+              type: object
+              properties:
+                profileImage:
+                  type: string
+                  format: binary
+        required: false
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Users
+      summary: Delete User
+      operationId: DeleteUser
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get All Categories
+      operationId: GetAllCategories
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security: []
+    post:
+      tags:
+        - Categories
+      summary: Create New Category
+      operationId: CreateNewCategory
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get One Category
+      operationId: GetOneCategory
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    put:
+      tags:
+        - Categories
+      summary: Update Category
+      operationId: UpdateCategory
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            example:
+              title: Tech
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Categories
+      summary: Delete Category
+      operationId: DeleteCategory
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /articles/search:
+    get:
+      tags:
+        - Articles
+      summary: Get  All Articles or Search
+      operationId: GetAllArticlesorSearch
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security: []
+  /articles:
+    get:
+      tags:
+        - Articles
+      summary: Get  All Articles for Admin
+      operationId: GetAllArticlesforAdmin
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    post:
+      tags:
+        - Articles
+      summary: Post New Article
+      operationId: PostNewArticle
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+            schema:
+              required:
+                - title
+                - body
+                - imageUrl
+                - categoryId
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                imageUrl:
+                  type: string
+                  format: binary
+                categoryId:
+                  type: string
+        required: false
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /articles/{id}:
+    get:
+      tags:
+        - Articles
+      summary: Get one article
+      operationId: Getonearticle
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security: []
+    patch:
+      tags:
+        - Articles
+      summary: Update Article
+      operationId: UpdateArticle
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+            schema:
+              required:
+                - title
+                - categoryId
+                - imageUrl
+                - body
+              type: object
+              properties:
+                title:
+                  type: string
+                categoryId:
+                  type: string
+                imageUrl:
+                  type: string
+                  format: binary
+                body:
+                  type: string
+        required: false
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Articles
+      summary: Delete Article
+      operationId: DeleteArticle
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+
+  /comments/{id}:
+    post:
+      tags:
+        - Comments
+      summary: New Comment
+      operationId: NewComment
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+            example:
+              text: test
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    get:
+      tags:
+        - Comments
+      summary: Get All Comment For Specific Article
+      operationId: GetAllCommentForSpecificArticle
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Comments
+      summary: Delete Comment
+      operationId: DeleteComment
+      parameters:
+        - name: id
+          in: path
+          description: ""
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+components:
+  schemas:
+    Login:
+      title: Login
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: admin@blog.com
+        password: admin123
+    Register:
+      title: Register
+      required:
+        - name
+        - email
+        - password
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      description: Registration schema
+    Category:
+      title: Category
+      required:
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+      description: Category schema
+    Comment:
+      title: Comment
+      required:
+        - text
+      type: object
+      properties:
+        text:
+          type: string
+      description: Comment Schema
+    Article:
+      title: Article
+      required:
+        - title
+        - body
+        - imageUrl
+        - categoryId
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        imageUrl:
+          type: string
+        categoryId:
+          type: string
+      description: Article Schema
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+security: []
+tags:
+  - name: Users
+    description: ""
+  - name: Categories
+    description: ""
+  - name: Articles
+    description: ""
+  - name: Comments
+    description: ""
