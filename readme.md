@@ -40,5 +40,8 @@ http://localhost:3000/api/v1/categories
 
 You should see an empty arry []. That confirms that you have set up everything successfully.
 
-You can access the api over Heroku with:
+Access api over Heroku:
 https://blog-api-4.herokuapp.com/
+
+Access api over Raiway:
+https://blog-api-production-92e5.up.railway.app/api-docs/
